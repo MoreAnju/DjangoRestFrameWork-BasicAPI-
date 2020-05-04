@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import mixins
 
+#new comment for anju 
 
 # rest framework generic api view
 class GenericAPIView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin,
