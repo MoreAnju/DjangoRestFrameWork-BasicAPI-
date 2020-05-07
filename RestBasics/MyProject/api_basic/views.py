@@ -11,8 +11,58 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import mixins
+# to add authentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+# token authentication
+from rest_framework.authentication import TokenAuthentication
+from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
 
-#new comment for anju 
+
+# new comment for anju
+#viewset with modelviewset
+class ArticleViewSetModelView(viewsets.ModelViewSet):
+    serializer_class = ArticleSerializer
+    queryset = Article.objects.all()
+# just by adding this two lines we do CRUD
+
+
+# viewsets with generic
+#class ArticleViewSetGeneric(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin):
+ #   serializer_class = ArticleSerializer
+  #  queryset = Article.objects.all()
+
+
+
+# this viewsets
+#class ArticleViewSet(viewsets.ViewSet):
+#    def list(self, request):
+ #       articles = Article.objects.all()
+ #       serializer = ArticleSerializer(articles, many=True)
+   #     return Response(serializer.data)
+
+   # def create(self, request):
+     #   serializer = ArticleSerializer(data=request.data)
+      #  if serializer.is_valid():
+       #     serializer.save()
+        #    return Response(serializer.data, status=status.HTTP_201_CREATED)  # 201 is for created
+        #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    #def retrieve(self, request, pk=None):
+     #   queryset = Article.objects.all()
+      #  article = get_object_or_404(queryset, pk=pk)
+       # serializer = ArticleSerializer(article)
+        #return Response(serializer.data)
+
+    #def update(self, request, pk=None):
+     #   article = Article.objects.get(pk=pk)
+      #  serializer = ArticleSerializer(article, data=request.data)
+       # if serializer.is_valid():
+        #    serializer.save()
+         #   return Response(serializer.data)
+        #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # rest framework generic api view
 class GenericAPIView(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin,
@@ -21,6 +71,10 @@ class GenericAPIView(generics.GenericAPIView, mixins.ListModelMixin, mixins.Crea
     serializer_class = ArticleSerializer
 
     lookup_field = 'id'
+    # these to add authentication in generic API, (no one can see API) if user is then only he can see the api
+    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, id=None):
         if id:
@@ -38,9 +92,12 @@ class GenericAPIView(generics.GenericAPIView, mixins.ListModelMixin, mixins.Crea
         return self.destroy(request, id)
 
 
-
 # functions with rest framework apiview
 class ArticleAPIView(APIView):
+    # these to add authentication in generic API, (no one can see API) if user is then only he can see the api
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         articles = Article.objects.all()
         serializer = ArticleSerializer(articles, many=True)
